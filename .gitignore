@@ -1,0 +1,22 @@
+
+# Python environment
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+# Local databases
+*.db
+*.sqlite
+*.sqlite3
+
+# Secret files
+.env
+.streamlit/secrets.toml
+
+# Testing
+.pytest_cache/
+
+# Operating system
+.DS_Store
+Thumbs.db
