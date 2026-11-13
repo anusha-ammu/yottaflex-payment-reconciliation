@@ -1,4 +1,5 @@
 
+
 import argparse
 import random
 import sqlite3
@@ -20,8 +21,6 @@ DEFAULT_SEED = 20261022
 BANK_MANIFEST_ID = "FEED-BANK-20261112-001"
 
 LINE_CONFIG = {
-    # We currently have 60 settlement batches.
-    # Use 100 lines so every payout has a bank line.
     "starter": 100,
     "full": 5000
 }
@@ -63,11 +62,8 @@ def load_settlements(connection):
             currency_code,
             expected_payout_date,
             net_amount_minor
-
         FROM settlement_batches
-
         ORDER BY settlement_batch_id
-
     """).fetchall()
 
 
@@ -99,8 +95,6 @@ def generate_payout_lines(
                 f"Non-positive payout amount for {batch_id}"
             )
 
-        # Most payouts arrive on expected date.
-        # Some are delayed by one or two business days.
         delay = rng.choices(
             [0, 1, 2],
             weights=[85, 10, 5],
@@ -120,18 +114,12 @@ def generate_payout_lines(
             f"BTX-2026-{next_number:08d}"
         )
 
-        bank_account_reference = (
-            f"BA-{merchant_id}"
-        )
-
-        transaction_at = (
-            actual_date + " 10:00:00"
-        )
+        transaction_at = actual_date + " 10:00:00"
 
         records.append((
             bank_line_id,
             merchant_id,
-            bank_account_reference,
+            f"BA-{merchant_id}",
             payout_reference,
             external_bank_id,
             "CREDIT",
@@ -161,6 +149,11 @@ def generate_other_bank_lines(
 
     records = []
 
+    if remaining_count > 0 and not merchants:
+        raise ValueError(
+            "No merchants available for bank activity."
+        )
+
     for _ in range(remaining_count):
 
         merchant_id, currency = rng.choice(merchants)
@@ -185,10 +178,8 @@ def generate_other_bank_lines(
             + timedelta(days=days_after_start)
         )
 
-        transaction_at = (
-            transaction_date.strftime(
-                "%Y-%m-%d 11:00:00"
-            )
+        transaction_at = transaction_date.strftime(
+            "%Y-%m-%d 11:00:00"
         )
 
         bank_line_id = (
@@ -226,6 +217,7 @@ def generate_other_bank_lines(
 def save_bank_lines(
     connection,
     records,
+    payout_line_count,
     replace_existing=False
 ):
 
@@ -244,8 +236,6 @@ def save_bank_lines(
 
         if replace_existing:
 
-            # Remove downstream records first because
-            # they may reference bank statement lines.
             dependent_tables = [
                 "reconciliation_allocations",
                 "exception_entity_links",
@@ -270,7 +260,7 @@ def save_bank_lines(
                 WHERE feed_manifest_id = ?
             """, (BANK_MANIFEST_ID,))
 
-        # Create independent feed control record.
+        # Create feed control record.
         connection.execute("""
             INSERT INTO source_feed_manifests (
                 feed_manifest_id,
@@ -320,7 +310,10 @@ def save_bank_lines(
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, records)
 
-        # Verify actual line count.
+        # ---------------------------------------------
+        # VERIFY TOTAL LINE COUNT
+        # ---------------------------------------------
+
         actual_count = connection.execute("""
             SELECT COUNT(*)
             FROM bank_statement_lines
@@ -328,10 +321,31 @@ def save_bank_lines(
 
         if actual_count != len(records):
             raise ValueError(
-                "Bank statement count validation failed."
+                f"Expected {len(records)} lines, "
+                f"found {actual_count}."
             )
 
-        # Verify all payout references exist.
+        # ---------------------------------------------
+        # VERIFY PAYOUT LINE COUNT
+        # ---------------------------------------------
+
+        actual_payout_count = connection.execute("""
+            SELECT COUNT(*)
+            FROM bank_statement_lines
+            WHERE description = 'SETTLEMENT_PAYOUT'
+              AND feed_manifest_id = ?
+        """, (BANK_MANIFEST_ID,)).fetchone()[0]
+
+        if actual_payout_count != payout_line_count:
+            raise ValueError(
+                f"Expected {payout_line_count} payout lines, "
+                f"found {actual_payout_count}."
+            )
+
+        # ---------------------------------------------
+        # VERIFY EVERY SETTLEMENT HAS A PAYOUT LINE
+        # ---------------------------------------------
+
         missing_payouts = connection.execute("""
             SELECT
                 b.settlement_batch_id,
@@ -339,15 +353,23 @@ def save_bank_lines(
             FROM settlement_batches b
             LEFT JOIN bank_statement_lines s
                 ON s.bank_reference = b.payout_reference
-            WHERE s.bank_line_id IS NULL
+               AND s.description = 'SETTLEMENT_PAYOUT'
+            GROUP BY
+                b.settlement_batch_id,
+                b.payout_reference
+            HAVING COUNT(s.bank_line_id) <> 1
         """).fetchall()
 
         if missing_payouts:
             raise ValueError(
-                f"Missing payout bank records: {missing_payouts}"
+                f"Missing or duplicate payout records: "
+                f"{missing_payouts}"
             )
 
-        # Verify payout amounts and currencies.
+        # ---------------------------------------------
+        # VERIFY PAYOUT AMOUNTS AND CURRENCIES
+        # ---------------------------------------------
+
         mismatches = connection.execute("""
             SELECT
                 b.settlement_batch_id
@@ -364,24 +386,30 @@ def save_bank_lines(
                 f"Payout inconsistencies: {mismatches}"
             )
 
-        # Verify foreign keys.
+        # ---------------------------------------------
+        # VERIFY FOREIGN KEYS
+        # ---------------------------------------------
+
         fk_errors = connection.execute(
             "PRAGMA foreign_key_check"
         ).fetchall()
 
         if fk_errors:
             raise ValueError(
-                f"Foreign key violations: {fk_errors}"
+                f"Foreign-key violations: {fk_errors}"
             )
+
+        other_count = actual_count - actual_payout_count
 
         print("\nBANK STATEMENT GENERATION SUCCESSFUL")
         print("------------------------------------")
-        print(f"Total bank lines: {actual_count}")
-        print(f"Settlement payout lines: "
-              f"{len(records) - max(0, actual_count - len(records))}")
+        print(f"Total bank statement lines: {actual_count}")
+        print(f"Settlement payout lines: {actual_payout_count}")
+        print(f"Other account activity lines: {other_count}")
         print(f"Foreign-key errors: {len(fk_errors)}")
         print("Payout amount validation: PASSED")
         print("Currency validation: PASSED")
+        print("Payout reference validation: PASSED")
 
 
 # =====================================================
@@ -411,14 +439,42 @@ def main():
         action="store_true"
     )
 
+    parser.add_argument(
+        "--database",
+        type=Path,
+        default=DATABASE_PATH,
+        help="SQLite database path."
+    )
+
+    parser.add_argument(
+        "--expected-lines",
+        type=int,
+        default=None,
+        help="Optional expected total bank statement line count."
+    )
+
     args = parser.parse_args()
 
-    if not DATABASE_PATH.exists():
-        parser.error("Database does not exist.")
+    database_path = args.database
+
+    if not database_path.exists():
+        parser.error(
+            f"Database not found: {database_path}"
+        )
+
+    if (
+        args.expected_lines is not None
+        and args.expected_lines < 1
+    ):
+        parser.error(
+            "--expected-lines must be at least 1."
+        )
 
     rng = random.Random(args.seed)
 
-    with sqlite3.connect(DATABASE_PATH) as connection:
+    connection = sqlite3.connect(database_path)
+
+    try:
 
         connection.execute("PRAGMA foreign_keys = ON")
 
@@ -430,55 +486,77 @@ def main():
             ORDER BY merchant_id
         """).fetchall()
 
-    if not settlement_batches:
-        parser.error(
-            "No settlement batches found. Generate settlements first."
+        if not settlement_batches:
+            parser.error(
+                "No settlement batches found. "
+                "Generate settlements first."
+            )
+
+        if not merchants:
+            parser.error("No merchants found.")
+
+        target_count = max(
+            LINE_CONFIG[args.scale],
+            len(settlement_batches)
         )
 
-    target_count = max(
-        LINE_CONFIG[args.scale],
-        len(settlement_batches)
-    )
+        if target_count > 5000:
+            parser.error(
+                "This generator supports up to 5,000 "
+                "bank statement lines."
+            )
 
-    if target_count > 5000:
-        parser.error(
-            "This generator currently supports up to 5,000 "
-            "bank statement lines. Adjust settlement batching "
-            "before using full scale."
+        if (
+            args.expected_lines is not None
+            and target_count != args.expected_lines
+        ):
+            parser.error(
+                f"Expected {args.expected_lines} bank lines, "
+                f"but configured target is {target_count}. "
+                "Database was not modified."
+            )
+
+        print("Starting bank statement generation...")
+        print(f"Database: {database_path}")
+        print(f"Scale: {args.scale}")
+        print(f"Seed: {args.seed}")
+        print(f"Settlement batches: {len(settlement_batches)}")
+        print(f"Target bank statement lines: {target_count}")
+
+        payout_lines, next_number = generate_payout_lines(
+            settlement_batches,
+            1,
+            rng
         )
 
-    print("Starting bank statement generation...")
-    print(f"Scale: {args.scale}")
-    print(f"Seed: {args.seed}")
-    print(f"Settlement batches: {len(settlement_batches)}")
-    print(f"Target bank statement lines: {target_count}")
+        remaining_count = target_count - len(payout_lines)
 
-    payout_lines, next_number = generate_payout_lines(
-        settlement_batches,
-        1,
-        rng
-    )
+        other_lines = generate_other_bank_lines(
+            merchants,
+            remaining_count,
+            next_number,
+            rng
+        )
 
-    remaining_count = target_count - len(payout_lines)
+        all_records = payout_lines + other_lines
 
-    other_lines = generate_other_bank_lines(
-        merchants,
-        remaining_count,
-        next_number,
-        rng
-    )
+        if len(all_records) != target_count:
+            raise ValueError(
+                "Generated bank statement count does not "
+                "match the target."
+            )
 
-    all_records = payout_lines + other_lines
+        save_bank_lines(
+            connection,
+            all_records,
+            len(payout_lines),
+            args.replace_existing
+        )
 
-    save_bank_lines(
-        sqlite3.connect(DATABASE_PATH),
-        all_records,
-        args.replace_existing
-    )
+        print("\nBank statement generation completed!")
 
-    print(f"Settlement payout lines: {len(payout_lines)}")
-    print(f"Other account activity lines: {len(other_lines)}")
-    print("\nBank statement generation completed!")
+    finally:
+        connection.close()
 
 
 if __name__ == "__main__":

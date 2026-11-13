@@ -1,0 +1,7 @@
+anomaly_id,scenario,expected_exception_type,affected_record_ids,injection_summary
+A1,Duplicate settlement line,DUPLICATE_SETTLEMENT_LINE,STL-SET-2026-000001-001;STL-ANOM-FULL-001-DUP-001;SET-2026-000001,Inserted a second settlement line with the same source transaction reference.
+A2,Bank amount differs by processor fee,FEE_VARIANCE,SET-2026-000001;BANK-2026-000001,Changed bank amount from 1608836 to 1641670; difference equals processor fee 32834.
+A3,Refund before capture,REFUND_BEFORE_CAPTURE,PEV-ANOM-FULL-003-REFUND;PEV-000002;ATT-PAY-2026-00000001-01,"Inserted a synthetic refund of 18967 minor units at 2026-11-11 13:41:43, one hour before capture."
+A4,Silently dropped source record,MISSING_SOURCE_RECORD,FEED-BANK-20261112-001,Manifest expects 5001 records but only 5000 were ingested. No physical bank row was deleted.
+A5,Currency mismatch,CURRENCY_MISMATCH,STL-SET-2026-000001-002;SET-2026-000001,Changed settlement line currency from GBP to USD; batch currency remains GBP.
+A6,Duplicate processor event,DUPLICATE_PROCESSOR_EVENT,PEV-000002;PEV-ANOM-FULL-006-DUP-001;ATT-PAY-2026-00000001-01,Inserted a second delivery with the same processor event reference and linked it to the canonical event.

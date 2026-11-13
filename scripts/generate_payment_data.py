@@ -106,7 +106,8 @@ def clear_transaction_data(connection):
 def generate_payment_records(
     merchant_records,
     payment_count,
-    seed
+    seed,
+    one_processor_per_merchant=False
 ):
     """
     Generate linked payment orders, attempts
@@ -126,11 +127,39 @@ def generate_payment_records(
         for _ in merchant_records
     ]
 
-    selected_merchants = rng.choices(
-        merchant_records,
-        weights=merchant_weights,
-        k=payment_count
-    )
+    if one_processor_per_merchant:
+
+        if payment_count < len(merchant_records):
+            raise ValueError(
+                "Payment count must cover all selected merchants."
+            )
+
+        selected_merchants = list(merchant_records)
+
+        selected_merchants.extend(
+            rng.choices(
+                merchant_records,
+                weights=merchant_weights,
+                k=payment_count - len(merchant_records)
+            )
+        )
+
+        rng.shuffle(selected_merchants)
+
+    else:
+
+        selected_merchants = rng.choices(
+            merchant_records,
+            weights=merchant_weights,
+            k=payment_count
+        )
+
+
+    merchant_processor_map = {
+    merchant_id: PROCESSORS[index % len(PROCESSORS)]
+    for index, (merchant_id, currency)
+    in enumerate(merchant_records)
+}
 
     # Exactly 10% of orders will require a retry.
     retry_count = round(payment_count * 0.10)
@@ -139,21 +168,52 @@ def generate_payment_records(
         rng.sample(range(payment_count), retry_count)
     )
 
-    # Select permanently failed orders from
+        # Select permanently failed orders from
     # the remaining single-attempt orders.
+
     single_attempt_indices = [
         index
         for index in range(payment_count)
         if index not in retry_indices
     ]
 
+    # Protect the first payment for every merchant.
+    protected_indices = set()
+
+    if one_processor_per_merchant:
+
+        first_payment_by_merchant = {}
+
+        for index, (merchant_id, currency) in enumerate(
+            selected_merchants
+        ):
+            first_payment_by_merchant.setdefault(
+                merchant_id,
+                index
+            )
+
+        protected_indices = set(
+            first_payment_by_merchant.values()
+        )
+
     permanent_failure_count = round(
         payment_count * 0.10
     )
 
+    permanent_failure_candidates = [
+        index
+        for index in single_attempt_indices
+        if index not in protected_indices
+    ]
+
+    if permanent_failure_count > len(permanent_failure_candidates):
+        raise ValueError(
+            "Not enough eligible payments for permanent failures."
+        )
+
     permanently_failed_indices = set(
         rng.sample(
-            single_attempt_indices,
+            permanent_failure_candidates,
             permanent_failure_count
         )
     )
@@ -183,7 +243,10 @@ def generate_payment_records(
 
         amount_minor = generate_amount_minor(rng)
 
-        processor_name = rng.choice(PROCESSORS)
+        if one_processor_per_merchant:
+                processor_name = merchant_processor_map[merchant_id]
+        else:
+                processor_name = rng.choice(PROCESSORS)
 
         # All baseline payments occur after merchant activation.
         order_created = base_time + timedelta(
@@ -197,8 +260,13 @@ def generate_payment_records(
 
         is_retry_payment = index in retry_indices
 
+        is_protected_payment = (
+            index in protected_indices
+        )
+
         is_permanently_failed = (
             index in permanently_failed_indices
+            and not is_protected_payment
         )
 
         if is_retry_payment:
@@ -347,15 +415,16 @@ def save_payment_data(
     payment_orders,
     payment_attempts,
     processor_events,
-    replace_existing=False
+    replace_existing=False,
+    database_path=DATABASE_PATH
 ):
 
-    if not DATABASE_PATH.exists():
+    if not database_path.exists():
         raise FileNotFoundError(
             "Database not found. Run scripts/init_db.py first."
         )
 
-    connection = sqlite3.connect(DATABASE_PATH)
+    connection = sqlite3.connect(database_path)
 
     try:
 
@@ -508,17 +577,24 @@ def main():
         action="store_true",
         help="Clear existing synthetic transaction data first."
     )
+    parser.add_argument(
+    "--database",
+    type=Path,
+    default=DATABASE_PATH,
+    help="SQLite database path."
+)
 
     args = parser.parse_args()
 
     payment_count = PAYMENT_CONFIG[args.scale]
 
-    if not DATABASE_PATH.exists():
+
+    if not args.database.exists():
         parser.error(
             "Database not found. Run scripts/init_db.py first."
         )
 
-    with sqlite3.connect(DATABASE_PATH) as connection:
+    with sqlite3.connect(args.database) as connection:
 
         connection.execute("PRAGMA foreign_keys = ON")
 
@@ -543,13 +619,21 @@ def main():
             "No active merchants available. "
             "Generate master data first."
         )
-
-    if args.scale == "full" and total_merchants < 2000:
-        parser.error(
+        if args.scale == "full" and total_merchants < 2000:
+            parser.error(
             "Full scale needs 2,000 merchants. "
             "First run: python scripts/generate_master_data.py "
             "--scale full --seed 20261022"
         )
+
+    if args.scale == "full":
+
+        if len(merchant_records) < 1000:
+            parser.error(
+                "Full scale requires 1,000 active eligible merchants."
+            )
+
+        merchant_records = merchant_records[:1000]
 
     print("Starting payment data generation...")
     print(f"Scale: {args.scale}")
@@ -560,14 +644,16 @@ def main():
     orders, attempts, events = generate_payment_records(
         merchant_records,
         payment_count,
-        args.seed
+        args.seed,
+        one_processor_per_merchant=(args.scale == "full")
     )
 
     save_payment_data(
         orders,
         attempts,
         events,
-        args.replace_existing
+        args.replace_existing,
+         args.database
     )
 
     print("\nPayment data generation completed!")

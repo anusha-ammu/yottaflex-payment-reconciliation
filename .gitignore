@@ -1,22 +1,48 @@
 
-# Python environment
+# Python virtual environments
 .venv/
 venv/
-__pycache__/
-*.pyc
+env/
 
-# Local databases
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# SQLite databases
 *.db
+
+# Required small synthetic databases for dashboard and tests
+!data/exception_workflow_test.db
+!data/reconciliation_clean_backup.db
+
+# Keep large full-scale databases private and local
+data/reconciliation_full_scale.db
+data/reconciliation_full_scale_anomaly_test.db
+
 *.sqlite
 *.sqlite3
+# Generated CSV exports
+/exports/
 
-# Secret files
+# Generated temporary data
+data/generated/
+
+# Secrets and environment files
 .env
+.env.*
+!.env.example
 .streamlit/secrets.toml
 
 # Testing
 .pytest_cache/
+.coverage
+htmlcov/
+
+# Logs
+*.log
 
 # Operating system
 .DS_Store
 Thumbs.db
+Desktop.ini

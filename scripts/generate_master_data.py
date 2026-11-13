@@ -126,14 +126,15 @@ def generate_users():
 # SAVE DATA IN SQLITE
 # --------------------------------------------------
 
-def save_master_data(merchants, users):
+def save_master_data(merchants, users,
+    database_path=DATABASE_PATH):
 
-    if not DATABASE_PATH.exists():
+    if not database_path.exists():
         raise FileNotFoundError(
             "Database not found. Run scripts/init_db.py first."
         )
 
-    with sqlite3.connect(DATABASE_PATH) as connection:
+    with sqlite3.connect(database_path) as connection:
 
         connection.execute("PRAGMA foreign_keys = ON")
 
@@ -204,6 +205,12 @@ def main():
         default=None
     )
 
+    parser.add_argument(
+    "--database",
+    type=Path,
+    default=DATABASE_PATH,
+    help="SQLite database path."
+)
     args = parser.parse_args()
 
     merchant_count = (
@@ -227,7 +234,7 @@ def main():
 
     users = generate_users()
 
-    save_master_data(merchants, users)
+    save_master_data(merchants, users,args.database)
 
     print("\nMaster data generation completed!")
 

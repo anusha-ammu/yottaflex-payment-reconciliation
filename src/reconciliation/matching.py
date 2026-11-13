@@ -1,4 +1,3 @@
-
 import sqlite3
 import argparse
 
@@ -991,17 +990,18 @@ def detect_missing_feed_records(
 # =========================================================
 
 def run_reconciliation(
-    replace_existing=False
+    replace_existing=False,
+    database_path=DATABASE_PATH
 ):
-
-    if not DATABASE_PATH.exists():
+    database_path = Path(database_path)
+    if not database_path.exists():
 
         raise FileNotFoundError(
-            f"Database not found: {DATABASE_PATH}"
+            f"Database not found: {database_path}"
         )
 
     connection = sqlite3.connect(
-        DATABASE_PATH
+        database_path
     )
 
     connection.execute(
@@ -1292,8 +1292,17 @@ if __name__ == "__main__":
         help="Replace previous reconciliation results."
     )
 
+    parser.add_argument(
+        "--database",
+        type=Path,
+        default=DATABASE_PATH,
+        help="Path to the SQLite database to reconcile. "
+             "Defaults to data/reconciliation.db."
+    )
+
     args = parser.parse_args()
 
     run_reconciliation(
-        replace_existing=args.replace_existing
+        replace_existing=args.replace_existing,
+        database_path=args.database
     )

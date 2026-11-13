@@ -28,10 +28,7 @@ def calculate_fee(amount_minor):
     Calculate processor fee using integer minor units.
 
     200 basis points = 2%.
-
-    Integer arithmetic avoids floating-point errors.
-    The calculation rounds to the nearest minor unit,
-    with half units rounded upward.
+    Half units are rounded upward.
     """
 
     return (
@@ -258,7 +255,9 @@ def build_settlement_batches(events):
 
         batch_id = f"SET-{YEAR}-{batch_number:06d}"
 
-        payout_reference = f"PAYOUT-{YEAR}-{batch_number:06d}"
+        payout_reference = (
+            f"PAYOUT-{YEAR}-{batch_number:06d}"
+        )
 
         batch_events = grouped[key]
 
@@ -301,12 +300,8 @@ def build_settlement_batches(events):
             period_end, 1
         )
 
-        created_at = (
-            period_end + " 20:00:00"
-        )
+        created_at = period_end + " 20:00:00"
 
-        # SUBMITTED means the payout is expected,
-        # but the bank has not yet confirmed receipt.
         batches.append((
             batch_id,
             merchant_id,
@@ -438,9 +433,21 @@ def clear_previous_settlements(connection):
 # SAVE AND VALIDATE SETTLEMENTS
 # =====================================================
 
-def save_settlements(batches, lines, replace_existing=False):
+def save_settlements(
+    batches,
+    lines,
+    replace_existing=False,
+    database_path=DATABASE_PATH
+):
 
-    connection = sqlite3.connect(DATABASE_PATH)
+    database_path = Path(database_path)
+
+    if not database_path.exists():
+        raise FileNotFoundError(
+            f"Database not found: {database_path}"
+        )
+
+    connection = sqlite3.connect(database_path)
 
     connection.execute("PRAGMA foreign_keys = ON")
 
@@ -537,8 +544,19 @@ def save_settlements(batches, lines, replace_existing=False):
                 SELECT COUNT(*) FROM settlement_lines
             """).fetchone()[0]
 
+            if batch_count != len(batches):
+                raise ValueError(
+                    "Settlement batch count verification failed."
+                )
+
+            if line_count != len(lines):
+                raise ValueError(
+                    "Settlement line count verification failed."
+                )
+
             print("\nSETTLEMENT GENERATION SUCCESSFUL")
             print("--------------------------------")
+            print(f"Database: {database_path}")
             print(f"Settlement batches: {batch_count}")
             print(f"Settlement lines: {line_count}")
 
@@ -586,15 +604,42 @@ def main():
 
     parser.add_argument(
         "--replace-existing",
-        action="store_true"
+        action="store_true",
+        help="Replace existing settlement and reconciliation data."
+    )
+
+    parser.add_argument(
+        "--database",
+        type=Path,
+        default=DATABASE_PATH,
+        help="SQLite database path."
+    )
+
+    parser.add_argument(
+        "--expected-batches",
+        type=int,
+        default=None,
+        help="Optional expected settlement batch count."
     )
 
     args = parser.parse_args()
 
-    if not DATABASE_PATH.exists():
-        parser.error("Database not found.")
+    database_path = args.database
 
-    with sqlite3.connect(DATABASE_PATH) as connection:
+    if not database_path.exists():
+        parser.error(
+            f"Database not found: {database_path}"
+        )
+
+    if (
+        args.expected_batches is not None
+        and args.expected_batches < 1
+    ):
+        parser.error(
+            "--expected-batches must be at least 1."
+        )
+
+    with sqlite3.connect(database_path) as connection:
 
         connection.execute("PRAGMA foreign_keys = ON")
 
@@ -612,14 +657,28 @@ def main():
         batches, lines = build_settlement_batches(events)
 
     print("Starting settlement generation...")
+    print(f"Database: {database_path}")
     print(f"Capture events: {capture_count}")
     print(f"Refund events: {refund_count}")
     print(f"Settlement fee: {FEE_BASIS_POINTS / 100}%")
+    print(f"Settlement batches prepared: {len(batches)}")
+    print(f"Settlement lines prepared: {len(lines)}")
+
+    # Check expected batch count BEFORE modifying the database.
+    if (
+        args.expected_batches is not None
+        and len(batches) != args.expected_batches
+    ):
+        parser.error(
+            f"Expected {args.expected_batches} settlement batches, "
+            f"but generated {len(batches)}. Database was not modified."
+        )
 
     save_settlements(
         batches,
         lines,
-        args.replace_existing
+        args.replace_existing,
+        database_path
     )
 
     print("\nSettlement generation completed!")

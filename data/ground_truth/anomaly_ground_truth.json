@@ -1,0 +1,69 @@
+{
+    "project": "YottaFlex Payment Reconciliation",
+    "purpose": "Evaluation labels for synthetic anomaly tests. This file must never be used as reconciliation engine input.",
+    "engine_input": false,
+    "anomalies": [
+        {
+            "anomaly_id": "A1",
+            "scenario": "Duplicate settlement line",
+            "expected_exception_type": "DUPLICATE_SETTLEMENT_LINE",
+            "affected_record_ids": [
+                "STL-SET-2026-000001-001",
+                "STL-ANOM-001-DUP-001",
+                "SET-2026-000001"
+            ],
+            "injection_summary": "Inserted a second settlement line with the same source transaction reference."
+        },
+        {
+            "anomaly_id": "A2",
+            "scenario": "Bank amount differs by processor fee",
+            "expected_exception_type": "FEE_VARIANCE",
+            "affected_record_ids": [
+                "SET-2026-000001",
+                "BANK-2026-000001"
+            ],
+            "injection_summary": "Changed bank amount from 825221 to 842121; difference equals processor fee 16900."
+        },
+        {
+            "anomaly_id": "A3",
+            "scenario": "Refund before capture",
+            "expected_exception_type": "REFUND_BEFORE_CAPTURE",
+            "affected_record_ids": [
+                "PEV-001001",
+                "PEV-000772",
+                "ATT-PAY-2026-00000386-01"
+            ],
+            "injection_summary": "Moved refund time to 2026-11-10 11:31:54, one hour before capture time 2026-11-10 12:31:54."
+        },
+        {
+            "anomaly_id": "A4",
+            "scenario": "Silently dropped source record",
+            "expected_exception_type": "MISSING_SOURCE_RECORD",
+            "affected_record_ids": [
+                "FEED-BANK-20261112-001"
+            ],
+            "injection_summary": "Feed manifest expects 101 records but reports 100 ingested. This is a feed-control simulation; no physical bank row was deleted."
+        },
+        {
+            "anomaly_id": "A5",
+            "scenario": "Currency mismatch",
+            "expected_exception_type": "CURRENCY_MISMATCH",
+            "affected_record_ids": [
+                "STL-SET-2026-000001-002",
+                "SET-2026-000001"
+            ],
+            "injection_summary": "Changed settlement line currency from GBP to USD; batch currency remains GBP."
+        },
+        {
+            "anomaly_id": "A6",
+            "scenario": "Duplicate processor event",
+            "expected_exception_type": "DUPLICATE_PROCESSOR_EVENT",
+            "affected_record_ids": [
+                "PEV-000003",
+                "PEV-ANOM-006-DUP-001",
+                "ATT-PAY-2026-00000001-02"
+            ],
+            "injection_summary": "Inserted a second delivery with the same processor event reference and linked it to the original canonical event."
+        }
+    ]
+}
