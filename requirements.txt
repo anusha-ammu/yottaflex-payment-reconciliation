@@ -4,3 +4,6 @@ numpy
 Faker
 streamlit
 pytest
+fastapi[standard]
+openai
+python-dotenv

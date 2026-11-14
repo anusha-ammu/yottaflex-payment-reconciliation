@@ -1,0 +1,59 @@
+﻿body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f2f5f9;
+    color: #202b3c;
+}
+
+header {
+    background: #172b4d;
+    color: white;
+    padding: 25px 7%;
+}
+
+main {
+    max-width: 1000px;
+    margin: 25px auto;
+    padding: 0 20px;
+}
+
+.panel {
+    background: white;
+    padding: 22px;
+    margin-bottom: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px #00000012;
+}
+
+button {
+    padding: 11px 16px;
+    margin: 6px 0;
+    border: 0;
+    border-radius: 5px;
+    background: #1769aa;
+    color: white;
+    cursor: pointer;
+}
+
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.exception {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: #eaf1f8;
+    color: #172b4d;
+    margin: 8px 0;
+}
+
+pre {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    background: #f2f5f9;
+    padding: 15px;
+    border-radius: 7px;
+    min-height: 80px;
+}

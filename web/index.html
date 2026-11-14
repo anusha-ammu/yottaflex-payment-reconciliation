@@ -1,0 +1,36 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>YottaFlex Reconciliation</title>
+    <link rel="stylesheet" href="/web/style.css">
+    <script src="/web/app.js" defer></script>
+</head>
+<body>
+    <header>
+        <h1>YottaFlex</h1>
+        <p>Payment Reconciliation and AI Exception Investigation</p>
+    </header>
+
+    <main>
+        <section class="panel">
+            <h2>Reconciliation Summary</h2>
+            <div id="summary">Loading summary...</div>
+            <button id="refresh">Refresh Data</button>
+        </section>
+
+        <section class="panel">
+            <h2>Payment Exceptions</h2>
+            <div id="exceptions">Loading exceptions...</div>
+        </section>
+
+        <section class="panel">
+            <h2>AI Exception Assistant</h2>
+            <p id="selected">Select an exception above.</p>
+            <button id="explain" disabled>Explain with AI</button>
+            <pre id="result">AI explanation will appear here.</pre>
+        </section>
+    </main>
+</body>
+</html>
