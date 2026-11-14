@@ -1,384 +1,332 @@
+# YottaFlex â€“ Payment Reconciliation and AI Exception Investigation
 
-# YottaFlex Payment Reconciliation System
+A full-stack payment reconciliation system designed to automate payment matching, settlement verification, bank reconciliation, anomaly detection, and exception investigation.
 
-An end-to-end synthetic payment reconciliation platform developed for the YottaFlex.ai Associate AI Forward Deployed Engineer Code Challenge.
+The project combines Python, SQL, FastAPI, JavaScript, SQLite, and OpenAI API integration.
 
-The system processes payment orders, processor events, settlement batches, and bank statements. It identifies reconciliation discrepancies, detects anomalies, and supports exception investigation, resolution, and audit tracking.
+**GitHub Repository:**
+https://github.com/anusha-ammu/yottaflex-payment-reconciliation
+
+---
 
 ## 1. Project Overview
 
-YottaFlex Payment Reconciliation automates the comparison of payment processor settlements against bank statement transactions.
+Payment reconciliation is the process of comparing payment records from multiple financial systems to identify mismatches, missing records, duplicate transactions, and settlement differences.
 
-The platform supports:
+YottaFlex provides an automated reconciliation workflow that:
 
-- Synthetic merchant and payment data generation.
-- Payment attempt and processor event tracking.
-- Settlement batch generation.
-- Processor fee and refund calculations.
-- Bank statement ingestion and validation.
-- Automated settlement reconciliation.
-- Duplicate and financial anomaly detection.
-- Exception assignment and resolution.
-- Complete exception audit history.
-- Independent ground-truth evaluation.
-- CSV data exports.
-- Interactive Streamlit dashboard.
+- Generates synthetic payment and settlement data.
+- Processes processor events and bank statements.
+- Matches payment and settlement records.
+- Detects reconciliation anomalies.
+- Creates and manages exceptions.
+- Maintains an investigation audit trail.
+- Provides REST API access.
+- Offers AI-assisted exception investigation.
 
-All generated transaction data is synthetic.
+---
 
 ## 2. Technology Stack
 
 | Technology | Purpose |
 |---|---|
-| Python | Application logic and data generation |
+| Python | Backend development and reconciliation logic |
+| SQL | Database queries and reconciliation |
 | SQLite | Relational database |
-| Pandas | Data processing and analysis |
-| Streamlit | Interactive dashboard |
-| Faker | Synthetic merchant data |
+| FastAPI | REST API development |
+| JavaScript | Frontend and API integration |
+| HTML5 | Frontend structure |
+| CSS3 | Frontend styling |
+| Streamlit | Reconciliation dashboard |
+| OpenAI API | AI-assisted exception explanations |
+| Git and GitHub | Version control and project collaboration |
 | Pytest | Automated testing |
-| CSV / JSON | Data exports and evaluation labels |
 
-## 3. Project Structure
+---
+
+## 3. System Architecture
 
 ```text
-yottaflex-payment-reconciliation/
-|
-|-- app/
-|   |-- app.py
-|
-|-- data/
-|   |-- reconciliation.db
-|   |-- reconciliation_clean_backup.db
-|   |-- reconciliation_anomaly_test.db
-|   |-- reconciliation_full_scale.db
-|   |-- reconciliation_full_scale_anomaly_test.db
-|   |-- ground_truth/
-|   |-- ground_truth_full_scale/
-|
-|-- docs/
-|
-|-- exports/
-|   |-- full_scale_anomaly_test/
-|
-|-- scripts/
-|   |-- init_db.py
-|   |-- generate_master_data.py
-|   |-- generate_payment_data.py
-|   |-- generate_settlements.py
-|   |-- generate_bank_statements.py
-|   |-- generate_refunds.py
-|   |-- inject_anomalies.py
-|   |-- export_data.py
-|   |-- verify_bank_statements.py
-|   |-- verify_refunds.py
-|   |-- verify_settlements.py
-|   |-- smoke_test_db.py
-|   |-- fix_missing_capture.py
-|
-|-- src/
-|   |-- database/
-|   |   |-- schema.sql
-|   |
-|   |-- reconciliation/
-|   |   |-- matching.py
-|   |
-|   |-- exceptions/
-|   |   |-- workflow.py
-|   |
-|   |-- generator/
-|   |
-|   |-- validation/
-|
-|-- tests/
-|   |-- test_anomaly_detection.py
-|   |-- test_exception_workflow.py
-|
-|-- README.md
-|-- requirements.txt
-|-- .gitignore
+                  YOTTAFLEX SYSTEM
+                         |
+             +-----------+-----------+
+             |                       |
+       Streamlit UI             JavaScript UI
+             |                       |
+             |                   HTTP / JSON
+             |                       |
+             +-----------+-----------+
+                         |
+                    FastAPI
+                    Backend
+                         |
+             +-----------+-----------+
+             |                       |
+       SQLite Database         OpenAI API
+             |                       |
+       Payment Data          AI Exception Analysis
+       Settlement Data       Explanation
+       Bank Statements       Possible Causes
+       Reconciliation        Investigation Steps
+       Exceptions
+       Audit History
 ```
 
-## 4. Full-Scale Synthetic Dataset
+---
 
-The full-scale dataset was generated using the deterministic seed:
+## 4. Key Features
 
-`20261022`
+### Payment Reconciliation
 
-| Dataset | Record Count |
-|---|---:|
-| Merchants | 2,000 |
-| Payment orders | 50,000 |
-| Payment attempts | 55,000 |
-| Processor events | 100,001 |
-| Settlement batches | 1,000 |
-| Settlement lines | 90,002 |
-| Bank statement lines | 5,000 |
-
-The separate full-scale anomaly-testing database contains additional synthetic anomaly records.
-
-### Bank Statement Distribution
-
-| Transaction category | Records |
-|---|---:|
-| Settlement payout lines | 1,000 |
-| Other account activity | 4,000 |
-| Total | 5,000 |
-
-## 5. System Architecture
-
-The system consists of the following major components.
-
-### Synthetic Data Generation
-
-Generates merchants, payment orders, attempts, processor events, settlement batches, and bank statement records.
-
-### Settlement Generation
-
-Calculates processor fees using integer minor currency units and builds traceable settlement lines.
-
-### Reconciliation Engine
-
-Compares expected settlement payouts with actual bank statement credits using payout references, amounts, and currencies.
+- Payment order generation.
+- Payment attempt tracking.
+- Processor event processing.
+- Settlement batch generation.
+- Bank statement generation.
+- Automated transaction matching.
+- Reconciliation result tracking.
 
 ### Anomaly Detection
 
-Identifies inconsistent or duplicate financial records and other reconciliation exceptions.
+The system detects six reconciliation anomaly types:
+
+1. Fee Variance
+2. Duplicate Settlement Line
+3. Duplicate Processor Event
+4. Refund Before Capture
+5. Currency Mismatch
+6. Missing Source Record
 
 ### Exception Management
 
-Supports:
-
+- Exception creation and tracking.
 - Exception assignment.
 - Investigation notes.
-- Resolution.
-- Closure.
-- Audit event tracking.
+- Exception resolution.
+- Exception closure.
+- Audit history tracking.
 
-### Dashboard
+### Full-Stack REST API
 
-Provides an interactive Streamlit interface for monitoring reconciliation results and managing exceptions.
+FastAPI provides endpoints for accessing exception records, reconciliation summaries, and investigation history.
 
-## 6. Reconciliation Workflow
+### AI-Assisted Investigation
 
-1. Generate synthetic merchant master data.
-2. Generate payment orders and payment attempts.
-3. Record processor authorization, failure, and capture events.
-4. Calculate settlement fees and net settlement amounts.
-5. Generate settlement batches and settlement lines.
-6. Generate synthetic bank statement records.
-7. Reconcile settlements against bank transactions.
-8. Identify discrepancies and create exceptions.
-9. Assign and investigate exceptions.
-10. Resolve and close exceptions.
-11. Maintain an auditable record of exception lifecycle events.
+The OpenAI integration retrieves an exception and its investigation history from SQLite.
 
-## 7. Supported Anomaly Scenarios
+It can generate:
 
-The project implements six synthetic anomaly scenarios.
+- Plain-language exception explanations.
+- Supporting evidence summaries.
+- Possible causes.
+- Recommended investigation steps.
+- Missing information required for further investigation.
 
-| ID | Anomaly | Expected Exception |
+AI recommendations require human verification. The assistant does not execute financial actions or independently resolve exceptions.
+
+---
+
+## 5. REST API Endpoints
+
+| Method | Endpoint | Description |
 |---|---|---|
-| A1 | Duplicate settlement line | DUPLICATE_SETTLEMENT_LINE |
-| A2 | Bank amount differs by processor fee | FEE_VARIANCE |
-| A3 | Refund before capture | REFUND_BEFORE_CAPTURE |
-| A4 | Missing source record | MISSING_SOURCE_RECORD |
-| A5 | Currency mismatch | CURRENCY_MISMATCH |
-| A6 | Duplicate processor event | DUPLICATE_PROCESSOR_EVENT |
+| GET | `/` | API home |
+| GET | `/api/health` | API health check |
+| GET | `/api/exceptions` | List exceptions |
+| GET | `/api/exceptions/{exception_id}` | Get exception details |
+| GET | `/api/exceptions/{exception_id}/history` | Get exception audit history |
+| GET | `/api/reconciliation/summary` | Get reconciliation summary |
+| POST | `/api/ai/explain-exception` | Generate an AI exception explanation |
 
-Ground-truth labels are maintained separately from reconciliation engine inputs.
+Interactive API documentation:
 
-The refund-before-capture full-scale test uses an intentionally inserted synthetic refund event because the clean full-scale baseline contains no refund events.
+`http://127.0.0.1:8000/docs`
 
-## 8. Database Organization
+---
 
-Three important database roles are maintained:
-
-| Database | Purpose |
-|---|---|
-| reconciliation.db | Original starter database |
-| reconciliation_full_scale.db | Clean full-scale baseline |
-| reconciliation_full_scale_anomaly_test.db | Full-scale anomaly evaluation |
-
-The clean full-scale database is preserved independently from anomaly injection.
-
-## 9. Validation Results
-
-### Clean Full-Scale Reconciliation
-
-| Metric | Result |
-|---|---:|
-| Settlement batches processed | 1,000 |
-| Matched settlements | 1,000 |
-| Review required | 0 |
-| Exceptions | 0 |
-| Foreign-key errors | 0 |
-
-### Full-Scale Anomaly Testing
-
-| Metric | Result |
-|---|---:|
-| Settlement batches processed | 1,000 |
-| Matched | 999 |
-| Review required | 1 |
-| Detected exceptions | 6 |
-| Expected exception types | 6 |
-| Actual exception types | 6 |
-| Ground-truth agreement | Exact match |
-| Foreign-key errors | 0 |
-
-### Database Integrity
-
-Both full-scale databases passed SQLite integrity checks.
-
-## 10. Automated Testing
-
-Run the complete test suite:
-
-```powershell
-python -m pytest -v
-```
-
-Latest verified result:
+## 6. Project Structure
 
 ```text
-4 passed in 0.44s
+yottaflex-payment-reconciliation/
+â”‚
+â”œâ”€â”€ api/
+â”‚   â”œâ”€â”€ __init__.py
+â”‚   â””â”€â”€ main.py
+â”‚
+â”œâ”€â”€ app/
+â”‚   â””â”€â”€ app.py
+â”‚
+â”œâ”€â”€ web/
+â”‚   â”œâ”€â”€ index.html
+â”‚   â”œâ”€â”€ app.js
+â”‚   â””â”€â”€ style.css
+â”‚
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ database/
+â”‚   â”œâ”€â”€ reconciliation/
+â”‚   â””â”€â”€ exceptions/
+â”‚
+â”œâ”€â”€ data/
+â”‚
+â”œâ”€â”€ docs/
+â”‚   â”œâ”€â”€ SYSTEM_ARCHITECTURE.md
+â”‚   â””â”€â”€ DATABASE_SCHEMA.md
+â”‚
+â”œâ”€â”€ scripts/
+â”‚   â”œâ”€â”€ generate_master_data.py
+â”‚   â”œâ”€â”€ generate_payment_data.py
+â”‚   â”œâ”€â”€ generate_settlements.py
+â”‚   â”œâ”€â”€ generate_bank_statements.py
+â”‚   â”œâ”€â”€ inject_anomalies.py
+â”‚   â””â”€â”€ export_data.py
+â”‚
+â”œâ”€â”€ tests/
+â”‚
+â”œâ”€â”€ .env.example
+â”œâ”€â”€ .gitignore
+â”œâ”€â”€ README.md
+â””â”€â”€ requirements.txt
 ```
 
-Tests cover:
+---
 
-- Clean database reconciliation.
-- Detection of all six anomaly scenarios.
-- Ground-truth scenario uniqueness.
-- Complete exception lifecycle.
+## 7. Installation and Setup
 
-## 11. Running the Application
+### Step 1: Clone the Repository
 
-Activate the virtual environment:
+```bash
+git clone https://github.com/anusha-ammu/yottaflex-payment-reconciliation.git
+```
+
+### Step 2: Navigate to the Project
+
+```bash
+cd yottaflex-payment-reconciliation
+```
+
+### Step 3: Create a Virtual Environment
+
+```bash
+python -m venv .venv
+```
+
+### Step 4: Activate the Environment (Windows PowerShell)
 
 ```powershell
 .\.venv\Scripts\Activate.ps1
 ```
 
-Install dependencies:
+### Step 5: Install Dependencies
 
-```powershell
-pip install -r requirements.txt
+```bash
+python -m pip install -r requirements.txt
 ```
 
-Start the Streamlit dashboard:
+### Step 6: Configure Environment Variables
 
-```powershell
-python -m streamlit run .\app\app.py
-```
+Copy `.env.example` to `.env` if the local `.env` file does not already exist.
 
-Open:
-
-http://localhost:8501
-
-The dashboard uses the SQLite database path configured in `app/app.py`.
-
-## 12. Running Full-Scale Reconciliation
-
-Clean baseline:
-
-```powershell
-python .\src\reconciliation\matching.py --database .\data\reconciliation_full_scale.db --replace-existing
-```
-
-Full-scale anomaly testing:
-
-```powershell
-python .\src\reconciliation\matching.py --database .\data\reconciliation_full_scale_anomaly_test.db --replace-existing
-```
-
-The anomaly-testing database must contain the injected anomalies before running the second command.
-
-## 13. CSV Data Exports
-
-Generate the full-scale CSV exports:
-
-```powershell
-python .\scripts\export_data.py --database .\data\reconciliation_full_scale_anomaly_test.db --output-dir .\exports\full_scale_anomaly_test
-```
-
-The export process creates CSV files for:
-
-- Merchants.
-- Payment orders.
-- Payment attempts.
-- Processor events.
-- Settlement batches.
-- Settlement lines.
-- Bank statement lines.
-- Reconciliation runs and matches.
-- Exceptions and exception history.
-- Supporting relationships and feed manifests.
-
-The latest verified export contains:
-
-- 16 exported database tables.
-- 305,035 exported records.
-- A dataset summary.
-- Export notes.
-
-## 14. Financial Data Handling
-
-Financial amounts are represented using integer minor currency units.
-
-Examples:
-
-- INR 100.50 = 10,050 paise.
-- USD 100.50 = 10,050 cents.
-- EUR 100.50 = 10,050 cents.
-
-Integer arithmetic is used to avoid floating-point rounding errors in financial calculations.
-
-Processor fees are calculated using basis points.
-
-## 15. Reproducibility and Ground Truth
-
-Synthetic data generation uses a fixed random seed.
-
-Ground-truth evaluation files are stored separately:
+Configure:
 
 ```text
-data/
-|-- ground_truth/
-|-- ground_truth_full_scale/
+OPENAI_API_KEY=your_openai_api_key
+OPENAI_MODEL=gpt-6-luna
 ```
 
-Ground-truth labels are used only to evaluate detected exceptions.
-
-They are never supplied to the reconciliation engine as input.
-
-## 16. Project Limitations
-
-- The datasets are synthetic and do not represent real payment transactions.
-- Processor and bank integrations are simulated.
-- Refund-before-capture testing uses an intentionally injected synthetic event.
-- The dashboard is a local demonstration application.
-- The full-scale data represents a deterministic test scenario, not a live production environment.
-
-## 17. Future Improvements
-
-Potential extensions include:
-
-- Real payment processor integrations.
-- Automated bank feed ingestion.
-- Advanced reconciliation matching strategies.
-- Risk scoring and anomaly prioritization.
-- Additional automated regression tests.
-- Production deployment and authentication.
-- Improved dashboard analytics and exports.
-
-## 18. Project Status
-
-Core full-scale data generation, reconciliation, anomaly detection, exception management, and CSV exports have been implemented and validated.
-
-The latest verified regression suite contains four passing tests.
-
-Documentation and final submission preparation are in progress.
+Use your own API key. Never upload the actual `.env` file to GitHub.
 
 ---
 
-Developed for the YottaFlex.ai Associate AI Forward Deployed Engineer Code Challenge.
+## 8. Running the Application
+
+### Run the Streamlit Dashboard
+
+```bash
+python -m streamlit run .\app\app.py
+```
+
+### Run the FastAPI Backend
+
+```bash
+python -m uvicorn api.main:app --reload
+```
+
+### Open the JavaScript Frontend
+
+`http://127.0.0.1:8000/web/`
+
+### Open FastAPI Swagger Documentation
+
+`http://127.0.0.1:8000/docs`
+
+---
+
+## 9. Running Tests
+
+Execute the test suite:
+
+```bash
+python -m pytest -q
+```
+
+The tests cover the existing reconciliation and exception workflow functionality.
+
+---
+
+## 10. Database and Reconciliation Validation
+
+The project includes large-scale synthetic reconciliation datasets.
+
+The full-scale test scenario includes:
+
+- 2,000 merchants.
+- 50,000 payment orders.
+- 55,000 payment attempts.
+- 100,000 original processor events.
+- 1,000 settlement batches.
+- 90,000 settlement lines.
+- 5,000 bank statement lines.
+
+The anomaly test scenario includes six deliberately injected anomalies and a separate ground-truth comparison.
+
+The large full-scale database files are generated locally and are not included in the GitHub repository.
+
+---
+
+## 11. Security and Limitations
+
+- OpenAI API credentials are stored in local environment variables.
+- The `.env` file is excluded from Git tracking.
+- `.env.example` contains placeholders only.
+- AI-generated findings are recommendations and require human review.
+- Live AI responses require an accessible OpenAI API model and available API credits.
+- The current API is designed for local demonstration.
+- Authentication, authorization, production-grade CORS restrictions, and additional deployment security must be implemented before public production use.
+
+---
+
+## 12. Learning Outcomes
+
+This project demonstrates practical experience with:
+
+- Python backend engineering.
+- SQL and relational database design.
+- Payment reconciliation workflows.
+- Data validation and anomaly detection.
+- Exception management and audit trails.
+- REST API design and development.
+- JavaScript frontend development.
+- HTTP and JSON integration.
+- LLM integration using the OpenAI API.
+- Git and GitHub workflows.
+- Automated testing.
+
+---
+
+## Author
+
+**Anusha**
+
+GitHub: https://github.com/anusha-ammu
+
+**Project:** YottaFlex Payment Reconciliation and AI Exception Investigation
