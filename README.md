@@ -147,40 +147,29 @@ Interactive API documentation:
 ## 6. Project Structure
 
 yottaflex-payment-reconciliation/
-|
-+-- api/
-|   +-- __init__.py
-|   +-- main.py
-|
-+-- app/
-|   +-- app.py
-|
-+-- web/
-|   +-- index.html
-|   +-- app.js
-|   +-- style.css
-|
-+-- src/
-|   +-- database/
-|   +-- reconciliation/
-|   +-- exceptions/
-|
-+-- data/
-|
-+-- docs/
-|   +-- SYSTEM_ARCHITECTURE.md
-|   +-- DATABASE_SCHEMA.md
-|
-+-- scripts/
-|
-+-- tests/
-|
-+-- .env.example
-+-- .gitignore
-+-- README.md
-+-- requirements.txt
-
----
+  api/
+    __init__.py
+    main.py
+  app/
+    app.py
+  web/
+    index.html
+    app.js
+    style.css
+  src/
+    database/
+    reconciliation/
+    exceptions/
+  data/
+  docs/
+    SYSTEM_ARCHITECTURE.md
+    DATABASE_SCHEMA.md
+  scripts/
+  tests/
+  .env.example
+  .gitignore
+  README.md
+  requirements.txt
 
 ## 7. Installation and Setup
 
