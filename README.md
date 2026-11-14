@@ -1,28 +1,28 @@
-# YottaFlex Payment Reconciliation and AI Exception Investigation
+# YottaFlex – Payment Reconciliation and AI Exception Investigation
 
-A full-stack payment reconciliation system designed to automate payment matching, settlement verification, bank reconciliation, anomaly detection, and exception investigation.
+A full-stack payment reconciliation system built to automate payment matching, settlement verification, bank reconciliation, anomaly detection, and exception investigation.
 
-The project combines Python, SQL, FastAPI, JavaScript, SQLite, and OpenAI API integration.
+The project combines Python, SQL, SQLite, FastAPI, JavaScript, and OpenAI API integration to demonstrate an end-to-end financial reconciliation workflow.
 
-**GitHub Repository:**
-https://github.com/anusha-ammu/yottaflex-payment-reconciliation
+**GitHub Repository:** https://github.com/anusha-ammu/yottaflex-payment-reconciliation
 
 ---
 
 ## 1. Project Overview
 
-Payment reconciliation is the process of comparing payment records from multiple financial systems to identify mismatches, missing records, duplicate transactions, and settlement differences.
+Payment reconciliation is the process of comparing financial records across payment processors, settlement systems, and bank statements to identify discrepancies and ensure accurate financial reporting.
 
 YottaFlex provides an automated reconciliation workflow that:
 
 - Generates synthetic payment and settlement data.
-- Processes processor events and bank statements.
-- Matches payment and settlement records.
-- Detects reconciliation anomalies.
-- Creates and manages exceptions.
+- Processes payment attempts and processor events.
+- Matches settlement records against bank statements.
+- Detects payment and settlement anomalies.
+- Creates and manages reconciliation exceptions.
 - Maintains an investigation audit trail.
-- Provides REST API access.
-- Offers AI-assisted exception investigation.
+- Exposes REST APIs for exception and reconciliation data.
+- Provides a JavaScript dashboard.
+- Integrates an AI assistant for exception investigation.
 
 ---
 
@@ -34,59 +34,59 @@ YottaFlex provides an automated reconciliation workflow that:
 | SQL | Database queries and reconciliation |
 | SQLite | Relational database |
 | FastAPI | REST API development |
-| JavaScript | Frontend and API integration |
+| JavaScript | Frontend development and API integration |
 | HTML5 | Frontend structure |
 | CSS3 | Frontend styling |
 | Streamlit | Reconciliation dashboard |
 | OpenAI API | AI-assisted exception explanations |
-| Git and GitHub | Version control and project collaboration |
 | Pytest | Automated testing |
+| Git and GitHub | Version control and project hosting |
 
 ---
 
 ## 3. System Architecture
 
 ```text
-                  YOTTAFLEX SYSTEM
-                         |
-             +-----------+-----------+
-             |                       |
-       Streamlit UI             JavaScript UI
-             |                       |
-             |                   HTTP / JSON
-             |                       |
-             +-----------+-----------+
-                         |
-                    FastAPI
-                    Backend
-                         |
-             +-----------+-----------+
-             |                       |
-       SQLite Database         OpenAI API
-             |                       |
-       Payment Data          AI Exception Analysis
-       Settlement Data       Explanation
-       Bank Statements       Possible Causes
-       Reconciliation        Investigation Steps
+                    YOTTAFLEX SYSTEM
+                           |
+              +------------+------------+
+              |                         |
+         Streamlit UI              JavaScript UI
+              |                         |
+              |                     HTTP / JSON
+              |                         |
+              +------------+------------+
+                           |
+                     FastAPI Backend
+                           |
+              +------------+------------+
+              |                         |
+        SQLite Database             OpenAI API
+              |                         |
+       Payment Records          AI Exception Analysis
+       Processor Events         Explanation
+       Settlement Records       Possible Causes
+       Bank Statements          Investigation Steps
+       Reconciliation Results
        Exceptions
        Audit History
 ```
 
 ---
 
-## 4. Key Features
+## 4. Core Features
 
-### Payment Reconciliation
+### 4.1 Payment Reconciliation
 
 - Payment order generation.
 - Payment attempt tracking.
 - Processor event processing.
 - Settlement batch generation.
 - Bank statement generation.
-- Automated transaction matching.
+- Automated payment and settlement matching.
 - Reconciliation result tracking.
 
-### Anomaly Detection
+### 4.2 Anomaly Detection
 
 The system detects six reconciliation anomaly types:
 
@@ -97,7 +97,7 @@ The system detects six reconciliation anomaly types:
 5. Currency Mismatch
 6. Missing Source Record
 
-### Exception Management
+### 4.3 Exception Management
 
 - Exception creation and tracking.
 - Exception assignment.
@@ -106,23 +106,33 @@ The system detects six reconciliation anomaly types:
 - Exception closure.
 - Audit history tracking.
 
-### Full-Stack REST API
+### 4.4 Full-Stack REST API
 
-FastAPI provides endpoints for accessing exception records, reconciliation summaries, and investigation history.
+The FastAPI backend exposes REST endpoints for accessing exception records, reconciliation summaries, and investigation history.
 
-### AI-Assisted Investigation
+### 4.5 JavaScript Dashboard
 
-The OpenAI integration retrieves an exception and its investigation history from SQLite.
+The frontend uses HTML, CSS, and JavaScript to communicate with the FastAPI backend through HTTP and JSON requests.
 
-It can generate:
+Dashboard features include:
 
-- Plain-language exception explanations.
-- Supporting evidence summaries.
+- Reconciliation summary.
+- Exception listing.
+- Exception selection.
+- AI exception explanation request.
+- API-driven data loading.
+
+### 4.6 AI-Assisted Exception Investigation
+
+The OpenAI integration uses exception information and investigation history from SQLite to generate:
+
+- Plain-language explanations.
+- Evidence summaries.
 - Possible causes.
 - Recommended investigation steps.
 - Missing information required for further investigation.
 
-AI recommendations require human verification. The assistant does not execute financial actions or independently resolve exceptions.
+AI-generated recommendations require human verification. The assistant does not execute financial actions or independently resolve exceptions.
 
 ---
 
@@ -136,9 +146,11 @@ AI recommendations require human verification. The assistant does not execute fi
 | GET | `/api/exceptions/{exception_id}` | Get exception details |
 | GET | `/api/exceptions/{exception_id}/history` | Get exception audit history |
 | GET | `/api/reconciliation/summary` | Get reconciliation summary |
-| POST | `/api/ai/explain-exception` | Generate an AI exception explanation |
+| POST | `/api/ai/explain-exception` | Generate AI exception explanation |
 
-Interactive API documentation:
+### Interactive API Documentation
+
+FastAPI Swagger documentation:
 
 `http://127.0.0.1:8000/docs`
 
@@ -146,30 +158,51 @@ Interactive API documentation:
 
 ## 6. Project Structure
 
+```text
 yottaflex-payment-reconciliation/
-  api/
-    __init__.py
-    main.py
-  app/
-    app.py
-  web/
-    index.html
-    app.js
-    style.css
-  src/
-    database/
-    reconciliation/
-    exceptions/
-  data/
-  docs/
-    SYSTEM_ARCHITECTURE.md
-    DATABASE_SCHEMA.md
-  scripts/
-  tests/
-  .env.example
-  .gitignore
-  README.md
-  requirements.txt
+|
++-- api/
+|   +-- __init__.py
+|   +-- main.py
+|
++-- app/
+|   +-- app.py
+|
++-- web/
+|   +-- index.html
+|   +-- app.js
+|   +-- style.css
+|
++-- src/
+|   +-- database/
+|   +-- reconciliation/
+|   +-- exceptions/
+|
++-- data/
+|
++-- docs/
+|   +-- SYSTEM_ARCHITECTURE.md
+|   +-- DATABASE_SCHEMA.md
+|
++-- scripts/
+|   +-- generate_master_data.py
+|   +-- generate_payment_data.py
+|   +-- generate_settlements.py
+|   +-- generate_bank_statements.py
+|   +-- inject_anomalies.py
+|   +-- export_data.py
+|
++-- tests/
+|   +-- test_anomaly_detection.py
+|   +-- test_exception_workflow.py
+|
++-- .env.example
++-- .gitignore
++-- README.md
++-- requirements.txt
+```
+
+---
 
 ## 7. Installation and Setup
 
@@ -191,7 +224,9 @@ cd yottaflex-payment-reconciliation
 python -m venv .venv
 ```
 
-### Step 4: Activate the Environment (Windows PowerShell)
+### Step 4: Activate the Virtual Environment
+
+Windows PowerShell:
 
 ```powershell
 .\.venv\Scripts\Activate.ps1
@@ -199,66 +234,76 @@ python -m venv .venv
 
 ### Step 5: Install Dependencies
 
-```bash
+```powershell
 python -m pip install -r requirements.txt
 ```
 
 ### Step 6: Configure Environment Variables
 
-Copy `.env.example` to `.env` if the local `.env` file does not already exist.
+Copy the example configuration if a local `.env` file does not already exist:
 
-Configure:
+```powershell
+if (!(Test-Path .env)) { Copy-Item .env.example .env }
+```
+
+Add your own OpenAI API key to `.env`:
 
 ```text
 OPENAI_API_KEY=your_openai_api_key
 OPENAI_MODEL=gpt-6-luna
 ```
 
-Use your own API key. Never upload the actual `.env` file to GitHub.
+Use a model available to your OpenAI API project.
+
+Never upload the real `.env` file or API credentials to GitHub.
 
 ---
 
 ## 8. Running the Application
 
-### Run the Streamlit Dashboard
+### 8.1 Run the Streamlit Dashboard
 
-```bash
-python -m streamlit run app/app.py
+```powershell
+python -m streamlit run .\app\app.py
 ```
 
-### Run the FastAPI Backend
+### 8.2 Run the FastAPI Backend
 
-```bash
+```powershell
 python -m uvicorn api.main:app --reload
 ```
 
-### Open the JavaScript Frontend
+### 8.3 Open the JavaScript Frontend
 
 `http://127.0.0.1:8000/web/`
 
-### Open FastAPI Swagger Documentation
+### 8.4 Open API Documentation
 
 `http://127.0.0.1:8000/docs`
 
+The FastAPI server must be running to use the JavaScript frontend.
+
 ---
 
-## 9. Running Tests
+## 9. Automated Testing
 
-Execute the test suite:
+Run the project's automated test suite:
 
-```bash
+```powershell
 python -m pytest -q
 ```
 
-The tests cover the existing reconciliation and exception workflow functionality.
+The existing tests cover reconciliation anomaly detection and exception workflow functionality.
+
+The previously verified test run completed with four passing tests.
 
 ---
 
-## 10. Database and Reconciliation Validation
+## 10. Database and Large-Scale Validation
 
-The project includes large-scale synthetic reconciliation datasets.
+The project includes large-scale synthetic payment reconciliation datasets.
 
-The full-scale test scenario includes:
+The full-scale clean dataset includes:
 
 - 2,000 merchants.
 - 50,000 payment orders.
@@ -268,29 +313,54 @@ The full-scale test scenario includes:
 - 90,000 settlement lines.
 - 5,000 bank statement lines.
 
-The anomaly test scenario includes six deliberately injected anomalies and a separate ground-truth comparison.
+The clean baseline reconciliation produced:
 
-The large full-scale database files are generated locally and are not included in the GitHub repository.
+- 1,000 matched settlement batches.
+- Zero reconciliation exceptions.
 
----
+A separate anomaly test dataset includes six deliberately injected anomalies and an independent ground-truth comparison.
 
-## 11. Security and Limitations
+Database integrity and foreign key validation were also performed.
 
-- OpenAI API credentials are stored in local environment variables.
-- The `.env` file is excluded from Git tracking.
-- `.env.example` contains placeholders only.
-- AI-generated findings are recommendations and require human review.
-- Live AI responses require an accessible OpenAI API model and available API credits.
-- The current API is designed for local demonstration.
-- Authentication, authorization, production-grade CORS restrictions, and additional deployment security must be implemented before public production use.
+Large-scale database files are generated locally and are not included in the public GitHub repository.
 
 ---
 
-## 12. Learning Outcomes
+## 11. AI Integration and Limitations
+
+The project includes an OpenAI Responses API integration for AI-assisted payment exception investigation.
+
+The AI endpoint retrieves exception data and investigation history from the database and submits the evidence for analysis.
+
+Live AI responses require:
+
+- A valid OpenAI API key.
+- Access to the configured model.
+- Available OpenAI API credits.
+
+The AI integration code is implemented, but successful live AI response generation has not been demonstrated because the development API account currently has insufficient credits.
+
+The reconciliation engine, REST API, and JavaScript dashboard can be used independently of the live AI service.
+
+---
+
+## 12. Security Considerations
+
+- API keys are stored in a local `.env` file.
+- `.env` is excluded from Git tracking.
+- `.env.example` contains placeholder values only.
+- API keys must never be embedded in frontend JavaScript.
+- AI recommendations require human verification.
+- The current API is intended for local development and demonstration.
+- Authentication, authorization, restricted CORS settings, and additional security controls are required before public production deployment.
+
+---
+
+## 13. Learning Outcomes
 
 This project demonstrates practical experience with:
 
-- Python backend engineering.
+- Python backend development.
 - SQL and relational database design.
 - Payment reconciliation workflows.
 - Data validation and anomaly detection.
@@ -298,13 +368,14 @@ This project demonstrates practical experience with:
 - REST API design and development.
 - JavaScript frontend development.
 - HTTP and JSON integration.
-- LLM integration using the OpenAI API.
+- OpenAI API integration.
+- Automated testing with Pytest.
 - Git and GitHub workflows.
-- Automated testing.
+- Financial data investigation and validation.
 
 ---
 
-## Author
+## 14. Author
 
 **Anusha**
 
