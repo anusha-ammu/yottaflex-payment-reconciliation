@@ -146,47 +146,39 @@ Interactive API documentation:
 
 ## 6. Project Structure
 
-```text
 yottaflex-payment-reconciliation/
-â”‚
-â”œâ”€â”€ api/
-â”‚   â”œâ”€â”€ __init__.py
-â”‚   â””â”€â”€ main.py
-â”‚
-â”œâ”€â”€ app/
-â”‚   â””â”€â”€ app.py
-â”‚
-â”œâ”€â”€ web/
-â”‚   â”œâ”€â”€ index.html
-â”‚   â”œâ”€â”€ app.js
-â”‚   â””â”€â”€ style.css
-â”‚
-â”œâ”€â”€ src/
-â”‚   â”œâ”€â”€ database/
-â”‚   â”œâ”€â”€ reconciliation/
-â”‚   â””â”€â”€ exceptions/
-â”‚
-â”œâ”€â”€ data/
-â”‚
-â”œâ”€â”€ docs/
-â”‚   â”œâ”€â”€ SYSTEM_ARCHITECTURE.md
-â”‚   â””â”€â”€ DATABASE_SCHEMA.md
-â”‚
-â”œâ”€â”€ scripts/
-â”‚   â”œâ”€â”€ generate_master_data.py
-â”‚   â”œâ”€â”€ generate_payment_data.py
-â”‚   â”œâ”€â”€ generate_settlements.py
-â”‚   â”œâ”€â”€ generate_bank_statements.py
-â”‚   â”œâ”€â”€ inject_anomalies.py
-â”‚   â””â”€â”€ export_data.py
-â”‚
-â”œâ”€â”€ tests/
-â”‚
-â”œâ”€â”€ .env.example
-â”œâ”€â”€ .gitignore
-â”œâ”€â”€ README.md
-â””â”€â”€ requirements.txt
-```
+|
++-- api/
+|   +-- __init__.py
+|   +-- main.py
+|
++-- app/
+|   +-- app.py
+|
++-- web/
+|   +-- index.html
+|   +-- app.js
+|   +-- style.css
+|
++-- src/
+|   +-- database/
+|   +-- reconciliation/
+|   +-- exceptions/
+|
++-- data/
+|
++-- docs/
+|   +-- SYSTEM_ARCHITECTURE.md
+|   +-- DATABASE_SCHEMA.md
+|
++-- scripts/
+|
++-- tests/
+|
++-- .env.example
++-- .gitignore
++-- README.md
++-- requirements.txt
 
 ---
 
