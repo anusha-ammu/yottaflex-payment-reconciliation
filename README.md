@@ -1,6 +1,6 @@
-# YottaFlex – Payment Reconciliation and AI Exception Investigation
+# YottaFlex - Payment Reconciliation and AI Exception Investigation
 
-A full-stack payment reconciliation system built to automate payment matching, settlement verification, bank reconciliation, anomaly detection, and exception investigation.
+A full-stack payment reconciliation system designed to automate payment matching, settlement verification, bank reconciliation, anomaly detection, and exception investigation.
 
 The project combines Python, SQL, SQLite, FastAPI, JavaScript, and OpenAI API integration to demonstrate an end-to-end financial reconciliation workflow.
 
@@ -20,8 +20,8 @@ YottaFlex provides an automated reconciliation workflow that:
 - Detects payment and settlement anomalies.
 - Creates and manages reconciliation exceptions.
 - Maintains an investigation audit trail.
-- Exposes REST APIs for exception and reconciliation data.
-- Provides a JavaScript dashboard.
+- Provides REST API access to exception and reconciliation data.
+- Offers a JavaScript-based dashboard.
 - Integrates an AI assistant for exception investigation.
 
 ---
@@ -53,7 +53,7 @@ YottaFlex provides an automated reconciliation workflow that:
               |                         |
          Streamlit UI              JavaScript UI
               |                         |
-              |                     HTTP / JSON
+              |                      HTTP/JSON
               |                         |
               +------------+------------+
                            |
@@ -114,12 +114,12 @@ The FastAPI backend exposes REST endpoints for accessing exception records, reco
 
 The frontend uses HTML, CSS, and JavaScript to communicate with the FastAPI backend through HTTP and JSON requests.
 
-Dashboard features include:
+Dashboard capabilities include:
 
 - Reconciliation summary.
 - Exception listing.
 - Exception selection.
-- AI exception explanation request.
+- AI explanation requests.
 - API-driven data loading.
 
 ### 4.6 AI-Assisted Exception Investigation
@@ -152,7 +152,7 @@ AI-generated recommendations require human verification. The assistant does not 
 
 FastAPI Swagger documentation:
 
-`http://127.0.0.1:8000/docs`
+http://127.0.0.1:8000/docs
 
 ---
 
@@ -185,16 +185,8 @@ yottaflex-payment-reconciliation/
 |   +-- DATABASE_SCHEMA.md
 |
 +-- scripts/
-|   +-- generate_master_data.py
-|   +-- generate_payment_data.py
-|   +-- generate_settlements.py
-|   +-- generate_bank_statements.py
-|   +-- inject_anomalies.py
-|   +-- export_data.py
 |
 +-- tests/
-|   +-- test_anomaly_detection.py
-|   +-- test_exception_workflow.py
 |
 +-- .env.example
 +-- .gitignore
@@ -226,7 +218,7 @@ python -m venv .venv
 
 ### Step 4: Activate the Virtual Environment
 
-Windows PowerShell:
+For Windows PowerShell:
 
 ```powershell
 .\.venv\Scripts\Activate.ps1
@@ -240,22 +232,20 @@ python -m pip install -r requirements.txt
 
 ### Step 6: Configure Environment Variables
 
-Copy the example configuration if a local `.env` file does not already exist:
+Create a local `.env` file from the example:
 
 ```powershell
-if (!(Test-Path .env)) { Copy-Item .env.example .env }
+Copy-Item .env.example .env
 ```
 
-Add your own OpenAI API key to `.env`:
+Edit `.env` and add your own OpenAI API key and an API model available to your account:
 
 ```text
 OPENAI_API_KEY=your_openai_api_key
-OPENAI_MODEL=gpt-6-luna
+OPENAI_MODEL=your_available_model_id
 ```
 
-Use a model available to your OpenAI API project.
-
-Never upload the real `.env` file or API credentials to GitHub.
+Never upload your real `.env` file or API credentials to GitHub.
 
 ---
 
@@ -275,11 +265,11 @@ python -m uvicorn api.main:app --reload
 
 ### 8.3 Open the JavaScript Frontend
 
-`http://127.0.0.1:8000/web/`
+http://127.0.0.1:8000/web/
 
 ### 8.4 Open API Documentation
 
-`http://127.0.0.1:8000/docs`
+http://127.0.0.1:8000/docs
 
 The FastAPI server must be running to use the JavaScript frontend.
 
@@ -295,7 +285,7 @@ python -m pytest -q
 
 The existing tests cover reconciliation anomaly detection and exception workflow functionality.
 
-The previously verified test run completed with four passing tests.
+A previously verified test run completed with four passing tests.
 
 ---
 
@@ -303,7 +293,7 @@ The previously verified test run completed with four passing tests.
 
 The project includes large-scale synthetic payment reconciliation datasets.
 
-The full-scale clean dataset includes:
+The full-scale test scenario includes:
 
 - 2,000 merchants.
 - 50,000 payment orders.
@@ -338,7 +328,7 @@ Live AI responses require:
 - Access to the configured model.
 - Available OpenAI API credits.
 
-The AI integration code is implemented, but successful live AI response generation has not been demonstrated because the development API account currently has insufficient credits.
+The AI integration code is implemented. However, successful live AI response generation has not been demonstrated because the development API account currently has insufficient credits.
 
 The reconciliation engine, REST API, and JavaScript dashboard can be used independently of the live AI service.
 
