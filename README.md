@@ -223,7 +223,7 @@ Use your own API key. Never upload the actual `.env` file to GitHub.
 ### Run the Streamlit Dashboard
 
 ```bash
-python -m streamlit run .\app\app.py
+python -m streamlit run app/app.py
 ```
 
 ### Run the FastAPI Backend
