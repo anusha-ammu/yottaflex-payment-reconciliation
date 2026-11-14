@@ -2,7 +2,7 @@
 
 A full-stack payment reconciliation system designed to automate payment matching, settlement verification, bank reconciliation, anomaly detection, and exception investigation.
 
-The project combines Python, SQL, SQLite, FastAPI, JavaScript, and OpenAI API integration to demonstrate an end-to-end financial reconciliation workflow.
+Built using Python, SQL, SQLite, FastAPI, JavaScript, and OpenAI API integration.
 
 **GitHub Repository:** https://github.com/anusha-ammu/yottaflex-payment-reconciliation
 
@@ -31,7 +31,7 @@ YottaFlex provides an automated reconciliation workflow that:
 | Technology | Purpose |
 |---|---|
 | Python | Backend development and reconciliation logic |
-| SQL | Database queries and reconciliation |
+| SQL | Database queries and data analysis |
 | SQLite | Relational database |
 | FastAPI | REST API development |
 | JavaScript | Frontend development and API integration |
@@ -47,30 +47,32 @@ YottaFlex provides an automated reconciliation workflow that:
 ## 3. System Architecture
 
 ```text
-                    YOTTAFLEX SYSTEM
-                           |
-              +------------+------------+
-              |                         |
-         Streamlit UI              JavaScript UI
-              |                         |
-              |                      HTTP/JSON
-              |                         |
-              +------------+------------+
-                           |
-                     FastAPI Backend
-                           |
-              +------------+------------+
-              |                         |
-        SQLite Database             OpenAI API
-              |                         |
-       Payment Records          AI Exception Analysis
-       Processor Events         Explanation
-       Settlement Records       Possible Causes
-       Bank Statements          Investigation Steps
-       Reconciliation Results
-       Exceptions
-       Audit History
+                 YOTTAFLEX SYSTEM
+                        |
+             +----------+----------+
+             |                     |
+        Streamlit UI          JavaScript UI
+             |                     |
+             |                 HTTP / JSON
+             |                     |
+             |                FastAPI API
+             |                     |
+             +----------+----------+
+                        |
+                  SQLite Database
+                        |
+              +---------+---------+
+              |                   |
+        Reconciliation       Exception Data
+              |                   |
+              +---------+---------+
+                        |
+                   OpenAI API
+                        |
+              AI-Assisted Investigation
 ```
+
+The Streamlit interface and JavaScript interface provide separate ways to interact with the reconciliation system. The JavaScript interface communicates with the FastAPI backend through HTTP and JSON.
 
 ---
 
@@ -106,13 +108,13 @@ The system detects six reconciliation anomaly types:
 - Exception closure.
 - Audit history tracking.
 
-### 4.4 Full-Stack REST API
+### 4.4 REST API Development
 
-The FastAPI backend exposes REST endpoints for accessing exception records, reconciliation summaries, and investigation history.
+The FastAPI backend provides endpoints for accessing exception records, reconciliation summaries, and investigation history.
 
 ### 4.5 JavaScript Dashboard
 
-The frontend uses HTML, CSS, and JavaScript to communicate with the FastAPI backend through HTTP and JSON requests.
+The frontend uses HTML, CSS, and JavaScript to communicate with the FastAPI backend.
 
 Dashboard capabilities include:
 
@@ -124,7 +126,9 @@ Dashboard capabilities include:
 
 ### 4.6 AI-Assisted Exception Investigation
 
-The OpenAI integration uses exception information and investigation history from SQLite to generate:
+The project includes an OpenAI Responses API integration.
+
+The AI assistant retrieves exception details and investigation history from SQLite and uses this information to generate:
 
 - Plain-language explanations.
 - Evidence summaries.
@@ -185,8 +189,16 @@ yottaflex-payment-reconciliation/
 |   +-- DATABASE_SCHEMA.md
 |
 +-- scripts/
+|   +-- generate_master_data.py
+|   +-- generate_payment_data.py
+|   +-- generate_settlements.py
+|   +-- generate_bank_statements.py
+|   +-- inject_anomalies.py
+|   +-- export_data.py
 |
 +-- tests/
+|   +-- test_anomaly_detection.py
+|   +-- test_exception_workflow.py
 |
 +-- .env.example
 +-- .gitignore
@@ -238,14 +250,16 @@ Create a local `.env` file from the example:
 Copy-Item .env.example .env
 ```
 
-Edit `.env` and add your own OpenAI API key and an API model available to your account:
+Edit `.env` and configure:
 
 ```text
 OPENAI_API_KEY=your_openai_api_key
 OPENAI_MODEL=your_available_model_id
 ```
 
-Never upload your real `.env` file or API credentials to GitHub.
+Use an OpenAI API model available to your project.
+
+Never upload your actual `.env` file or API credentials to GitHub.
 
 ---
 
@@ -285,7 +299,7 @@ python -m pytest -q
 
 The existing tests cover reconciliation anomaly detection and exception workflow functionality.
 
-A previously verified test run completed with four passing tests.
+The previously verified test run completed successfully with four passing tests.
 
 ---
 
@@ -320,7 +334,7 @@ Large-scale database files are generated locally and are not included in the pub
 
 The project includes an OpenAI Responses API integration for AI-assisted payment exception investigation.
 
-The AI endpoint retrieves exception data and investigation history from the database and submits the evidence for analysis.
+The AI endpoint retrieves exception details and investigation history from the database and submits the evidence for analysis.
 
 Live AI responses require:
 
@@ -328,9 +342,9 @@ Live AI responses require:
 - Access to the configured model.
 - Available OpenAI API credits.
 
-The AI integration code is implemented. However, successful live AI response generation has not been demonstrated because the development API account currently has insufficient credits.
+The AI integration code is implemented. However, successful live AI response generation has not yet been demonstrated because the development API account currently has insufficient credits.
 
-The reconciliation engine, REST API, and JavaScript dashboard can be used independently of the live AI service.
+The reconciliation engine, REST API, and JavaScript dashboard can operate independently of the live AI service.
 
 ---
 
