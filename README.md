@@ -1,4 +1,4 @@
-# YottaFlex â€“ Payment Reconciliation and AI Exception Investigation
+# YottaFlex Payment Reconciliation and AI Exception Investigation
 
 A full-stack payment reconciliation system designed to automate payment matching, settlement verification, bank reconciliation, anomaly detection, and exception investigation.
 
